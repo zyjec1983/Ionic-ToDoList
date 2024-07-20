@@ -8,31 +8,33 @@ import { Storage } from '@ionic/storage-angular';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  todos: { task: string, completed: boolean }[] = [];
+  todos: { task: string, completed: boolean, isEditing?: boolean }[] = [];
   newTodo: string = '';
 
   constructor(
     private toastController: ToastController,
     private storage: Storage) {
-      this.storage.create();
-      this.getItem();
+    this.storage.create();
+    this.getItem();
   }
 
-  setItem(){    
+  setItem() {
     localStorage.setItem('tarea1', JSON.stringify(this.todos));
   }
 
-  getItem(){    
-    var projecto1 = localStorage.getItem('tarea1');
-
-    this.todos= JSON.parse(projecto1!);
-    console.log('Informacion local', projecto1)    
+  getItem() {
+    const projecto1 = localStorage.getItem('tarea1');
+    if (projecto1) {
+      this.todos = JSON.parse(projecto1);
+    } else {
+      this.todos = [];
+    }
+    console.log('Informacion local', projecto1);
   }
-
 
   addToDo() {
     if (this.newTodo.trim().length > 0) {
-      this.todos.push({ task: this.newTodo, completed: false });
+      this.todos.push({ task: this.newTodo, completed: false, isEditing: false });
       this.newTodo = '';
       this.setItem();
       this.getItem();
@@ -43,16 +45,24 @@ export class HomePage {
 
   toggleComplete(index: number) {
     this.todos[index].completed = !this.todos[index].completed;
+    this.setItem(); // Guarda los cambios en el localStorage
   }
 
-  // Metodo para elimina tareas vacias
+  editTask(index: number) {
+    this.todos[index].isEditing = true;
+  }
+
+  saveTask(index: number) {
+    this.todos[index].isEditing = false;
+    this.setItem(); // Guarda los cambios en el localStorage
+  }
+
   removeTask(index: number) {
     this.todos.splice(index, 1);
     this.setItem();
     this.okToast('Tarea eliminada.');
   }
 
-  // Metodo de error para tareas vacias
   async errorToast(message: string) {
     const toast = await this.toastController.create({
       message: message,
@@ -62,8 +72,7 @@ export class HomePage {
     await toast.present();
   }
 
-   // Metodo de error para tareas vacias
-   async okToast(message: string) {
+  async okToast(message: string) {
     const toast = await this.toastController.create({
       message: message,
       duration: 2000,

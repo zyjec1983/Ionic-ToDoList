@@ -1,22 +1,56 @@
-<ion-header [translucent]="true">
+<ion-header>
+  <!-- Barra de herramientas en la parte superior de la página -->
   <ion-toolbar>
-    <ion-title>My ToDo App</ion-title>
+    <!-- Título de la aplicación -->
+    <ion-title>
+      ToDo List
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-item>
-    <ion-input [(ngModel)]="newTodo" name="task" placeholder="Add a new task"></ion-input>
-    <ion-button (click)="addToDo()">Add</ion-button>
-  </ion-item>
+<ion-content>
+  <!-- Contenedor principal -->
+  <ion-grid>
+    <!-- Fila para la entrada de nueva tarea -->
+    <ion-row>
+      <ion-col>
+        <!-- Entrada para añadir una nueva tarea -->
+        <ion-item>
+          <!-- Campo de entrada para el texto de la nueva tarea -->
+          <ion-input [(ngModel)]="newTodo" placeholder="Nueva tarea"></ion-input>
+          <!-- Botón para añadir la nueva tarea -->
+          <ion-button (click)="addToDo()">Añadir</ion-button>
+        </ion-item>
+      </ion-col>
+    </ion-row>
 
-  <ion-list>
-    <ion-item *ngFor="let todo of todos; let i = index">
-      <ion-label [ngStyle]="{'text-decoration': todo.completed ? 'line-through' : 'none'}">
-        {{ todo.task }}
-      </ion-label>
-      <ion-checkbox slot="start" [(ngModel)]="todo.completed" (ionChange)="toggleComplete(i)"></ion-checkbox>
-      <ion-button color="danger" (click)="removeTask(i)">Delete</ion-button>
-    </ion-item>
-  </ion-list>
+    <!-- Fila para la lista de tareas -->
+    <ion-row>
+      <ion-col>
+        <!-- Lista de tareas -->
+        <ion-list>
+          <!-- Iterar sobre el array de tareas -->
+          <ion-item *ngFor="let todo of todos; let i = index">
+            <!-- Mostrar la tarea si no está en modo de edición -->
+            <ion-label *ngIf="!todo.isEditing">{{ todo.task }}</ion-label>
+
+            <!-- Mostrar un campo de entrada para editar la tarea si está en modo de edición -->
+            <ion-input *ngIf="todo.isEditing" [(ngModel)]="todo.task" (blur)="saveTask(i)"></ion-input>
+            
+            <!-- Checkbox para marcar la tarea como completada -->
+            <ion-checkbox slot="end" [(ngModel)]="todo.completed" (ionChange)="toggleComplete(i)"></ion-checkbox>
+            
+            <!-- Botón para editar la tarea -->
+            <ion-button slot="end" color="primary" (click)="editTask(i)" *ngIf="!todo.isEditing">Editar</ion-button>
+            
+            <!-- Botón para guardar la tarea editada -->
+            <ion-button slot="end" color="secondary" (click)="saveTask(i)" *ngIf="todo.isEditing">Guardar</ion-button>
+            
+            <!-- Botón para eliminar la tarea -->
+            <ion-button slot="end" color="danger" (click)="removeTask(i)">Eliminar</ion-button>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
