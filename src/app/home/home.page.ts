@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 
@@ -7,16 +7,21 @@ import { Storage } from '@ionic/storage-angular';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
+
 export class HomePage {
   todos: { task: string, completed: boolean, isEditing?: boolean }[] = [];
   newTodo: string = '';
 
+  pokemonList: any[] = [];
+
   constructor(
     private toastController: ToastController,
-    private storage: Storage) {
+    private storage: Storage) 
+    {
     this.storage.create();
-    this.getItem();
+    this.getItem();    
   }
+  
 
   setItem() {
     localStorage.setItem('tarea1', JSON.stringify(this.todos));
